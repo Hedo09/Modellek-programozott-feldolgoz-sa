@@ -1,13 +1,25 @@
 package hu.bme.mit.yakindu.analysis.workhere;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.junit.Test;
+import org.yakindu.base.types.Event;
+import org.yakindu.base.types.Property;
+import org.yakindu.sct.model.sgraph.Scope;
 import org.yakindu.sct.model.sgraph.State;
 import org.yakindu.sct.model.sgraph.Statechart;
 import org.yakindu.sct.model.sgraph.Transition;
 
 import hu.bme.mit.model2gml.Model2GML;
+import hu.bme.mit.yakindu.analysis.RuntimeService;
+import hu.bme.mit.yakindu.analysis.TimerService;
+import hu.bme.mit.yakindu.analysis.example.ExampleStatemachine;
+import hu.bme.mit.yakindu.analysis.example.IExampleStatemachine;
 import hu.bme.mit.yakindu.analysis.modelmanager.ModelManager;
 
 public class Main {
@@ -26,7 +38,9 @@ public class Main {
 		// Reading model
 		Statechart s = (Statechart) root;
 		TreeIterator<EObject> iterator = s.eAllContents();
-		while (iterator.hasNext()) {
+		
+		//2.Feladat
+		/*while (iterator.hasNext()) {
 			EObject content = iterator.next();
 			if(content instanceof Transition) {
 				if(!((Transition) content).getSource().getName().isEmpty()) {
@@ -46,7 +60,96 @@ public class Main {
 				}
 			}
 			
+		}*/
+		
+		// 4.Feladat 3.alfeladat
+		
+		/*for(Scope scope : s.getScopes()) {
+			System.out.println("Belső változók: ");
+			for(Property p : scope.getVariables()) {
+				System.out.println(p.getName());
+			}
+			System.out.println("Eventek: ");
+			for(Event e : scope.getEvents()) {
+				System.out.println(e.getName());
+			}
+		}*/
+		
+		// 4.Feladat 4.alfeladat
+		
+		/*for(Scope scope : s.getScopes()) {
+			System.out.println("public static void print(IExampleStatemachine s) {");
+			for(Property p : scope.getVariables()) {
+				System.out.println("System.out.println(\"" + p.getName()+ "= \" + s.getSCInterface().get"+ p.getName()+ "());");
+			}
+			for(Event e : scope.getEvents()) {
+				System.out.println("System.out.println(\"" + e.getName()+ "= \" + s.getSCInterface().get"+ e.getName()+ "());");
+			}
+			System.out.println("}");
+			
+		} */
+		
+		// 4.Feladat 5.alfeladat
+		
+		ArrayList<String> Events = new ArrayList<>();
+		ArrayList<String>Variables = new ArrayList<>();
+		
+		for(Scope scope : s.getScopes()) {
+			for(Property p : scope.getVariables()) {
+				Variables.add(p.getName());
+			}
+			for(Event e : scope.getEvents()) {
+				Events.add(e.getName());
+			}
 		}
+		
+		System.out.println("public class RunStatechart {\r\n" + 
+				"	\r\n" + 
+				"	public static void main(String[] args) throws IOException {\r\n" + 
+				"		ExampleStatemachine s = new ExampleStatemachine();\r\n" + 
+				"		s.setTimer(new TimerService());\r\n" + 
+				"		RuntimeService.getInstance().registerStatemachine(s, 200);\r\n" + 
+				"		s.init();\r\n" + 
+				"		s.enter();\r\n" + 
+				"		s.runCycle();\r\n" + 
+				"		BufferedReader reader = new BufferedReader( new InputStreamReader(System.in));\r\n" + 
+				"		while(true) {\r\n" + 
+				"			String name = reader.readLine();\r\n" + 
+				"			if(name.equals(\"start\")) {\r\n" + 
+				"				s.raise"+ Events.get(Events.indexOf("start"))+ "();");
+		System.out.println("s.runCycle();\r\n" + 
+				"			}\r\n" + 
+				"			else if(name.equals(\"white\")) {\r\n" + 
+				"				s.raise"+ Events.get(Events.indexOf("white"))+ "();");
+		System.out.println("s.runCycle();\r\n" + 
+				"			}\r\n" + 
+				"			else if(name.equals(\"black\")) {\r\n" + 
+				"				s.raise"+ Events.get(Events.indexOf("black"))+ "();");
+		System.out.println("s.raiseWhite();\r\n" + 
+				"				s.runCycle();\r\n" + 
+				"			}\r\n" + 
+				"			else if(name.equals(\"exit\")) {\r\n" + 
+				"				print(s);\r\n" + 
+				"				System.exit(0);\r\n" + 
+				"			}\r\n" + 
+				"			print(s);\r\n" + 
+				"		}\r\n" + 
+				"		\r\n" + 
+				"	}\r\n" + 
+				"\r\n" + 
+				"	public static void print(IExampleStatemachine s) {");
+		for(Scope scope : s.getScopes()) {
+			for(Property p : scope.getVariables()) {
+				System.out.println("System.out.println(\"" + p.getName()+ "= \" + s.getSCInterface().get"+ p.getName()+ "());");
+			}
+		}
+		System.out.println("}\r\n" + 
+				"}");
+		
+		
+		
+		
+		
 		
 		// Transforming the model into a graph representation
 		String content = model2gml.transform(root);
