@@ -91,18 +91,6 @@ public class Main {
 		
 		// 4.Feladat 5.alfeladat
 		
-		ArrayList<String> Events = new ArrayList<>();
-		ArrayList<String>Variables = new ArrayList<>();
-		
-		for(Scope scope : s.getScopes()) {
-			for(Property p : scope.getVariables()) {
-				Variables.add(p.getName());
-			}
-			for(Event e : scope.getEvents()) {
-				Events.add(e.getName());
-			}
-		}
-		
 		System.out.println("public class RunStatechart {\r\n" + 
 				"	\r\n" + 
 				"	public static void main(String[] args) throws IOException {\r\n" + 
@@ -114,30 +102,26 @@ public class Main {
 				"		s.runCycle();\r\n" + 
 				"		BufferedReader reader = new BufferedReader( new InputStreamReader(System.in));\r\n" + 
 				"		while(true) {\r\n" + 
-				"			String name = reader.readLine();\r\n" + 
-				"			if(name.equals(\"start\")) {\r\n" + 
-				"				s.raise"+ Events.get(Events.indexOf("start"))+ "();");
-		System.out.println("s.runCycle();\r\n" + 
-				"			}\r\n" + 
-				"			else if(name.equals(\"white\")) {\r\n" + 
-				"				s.raise"+ Events.get(Events.indexOf("white"))+ "();");
-		System.out.println("s.runCycle();\r\n" + 
-				"			}\r\n" + 
-				"			else if(name.equals(\"black\")) {\r\n" + 
-				"				s.raise"+ Events.get(Events.indexOf("black"))+ "();");
-		System.out.println("s.raiseWhite();\r\n" + 
-				"				s.runCycle();\r\n" + 
-				"			}\r\n" + 
-				"			else if(name.equals(\"exit\")) {\r\n" + 
-				"				print(s);\r\n" + 
-				"				System.exit(0);\r\n" + 
-				"			}\r\n" + 
-				"			print(s);\r\n" + 
-				"		}\r\n" + 
-				"		\r\n" + 
-				"	}\r\n" + 
-				"\r\n" + 
-				"	public static void print(IExampleStatemachine s) {");
+				"			String name = reader.readLine();");
+		
+		for(Scope scope : s.getScopes()) {
+			for(Event p : scope.getEvents()) {
+				System.out.println("if(name.equals(\""+ p.getName()+ "\")) {\r\n" + 
+							"				s.raise"+ p.getName()+ "();\r\n" + 
+									"				s.runCycle();\r\n" + 
+									"			}");
+			}
+			System.out.println("else if(name.equals(\"exit\")) {\r\n" + 
+					"				print(s);\r\n" + 
+					"				System.exit(0);\r\n" + 
+					"			}\r\n" + 
+					"			print(s);\r\n" + 
+					"		}\r\n" + 
+					"		\r\n" + 
+					"	}\r\n" + 
+					"\r\n" + 
+					"	public static void print(IExampleStatemachine s) {");
+		}
 		for(Scope scope : s.getScopes()) {
 			for(Property p : scope.getVariables()) {
 				System.out.println("System.out.println(\"" + p.getName()+ "= \" + s.getSCInterface().get"+ p.getName()+ "());");
@@ -145,12 +129,6 @@ public class Main {
 		}
 		System.out.println("}\r\n" + 
 				"}");
-		
-		
-		
-		
-		
-		
 		// Transforming the model into a graph representation
 		String content = model2gml.transform(root);
 		// and saving it
